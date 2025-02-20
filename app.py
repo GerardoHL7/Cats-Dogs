@@ -1,7 +1,24 @@
 import streamlit as st
 import tensorflow as tf
-import numpy as np
-from PIL import Image
+import gdown
+import os
+
+# URL del modelo en Google Drive (reemplázala con tu ID)
+url = "1Epg3b63zLXUXbUmZcCpQucJVBziJW9GR"
+modelo_path = "modeloCNN3.h5"
+
+# Descargar el modelo si no existe
+if not os.path.exists(modelo_path):
+    st.write("Descargando el modelo, por favor espera...")
+    gdown.download(url, modelo_path, quiet=False)
+
+# Cargar el modelo
+@st.cache_resource
+def cargar_modelo():
+    return tf.keras.models.load_model(modelo_path)
+
+modelo = cargar_modelo()
+
 
 # Función para cargar el modelo con caché en Streamlit
 @st.cache_resource
