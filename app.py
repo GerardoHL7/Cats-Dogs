@@ -6,8 +6,8 @@ import gdown
 import os
 
 # 📌 Reemplaza con el ID de tu modelo en Google Drive
-ID_MODELO = "1-3xbX688NVdwm1g50x3f9IlOVCTe-2gh"
-URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
+ID_MODELO = "1-RA_iyHmMRLvqxcF4OLaim4tyJ0OcIK_"
+URL_MODELO = f"https://drive.google.com/uc?id=1-RA_iyHmMRLvqxcF4OLaim4tyJ0OcIK_={ID_MODELO}"
 RUTA_MODELO = "modeloCNN3.h5"
 
 # 📥 Descargar el modelo si no existe
