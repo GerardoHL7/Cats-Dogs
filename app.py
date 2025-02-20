@@ -6,7 +6,7 @@ from PIL import Image
 import os
 
 # 📌 Ruta del modelo guardado (debe estar en la misma carpeta que este script)
-RUTA_MODELO = "modeloCNN3 (2).h5"
+RUTA_MODELO = "modeloCNN3.h5"
 
 # 📌 Cargar el modelo
 @st.cache_resource
