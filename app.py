@@ -6,18 +6,17 @@ import gdown
 import os
 
 # 📌 ID del modelo en Google Drive
-ID_MODELO = "1-RQM9m57sv4daontINgKLGh8cpVnXdZt"
+ID_MODELO = "1-TdpYJNCcDv8nqHuUmAfMUdjp_psJgPD"  
 URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
-RUTA_MODELO = "modeloCNN3.h5"  
+RUTA_MODELO = "modeloCNN3.h5"
 
-# 📥 Verificar si el modelo ya está descargado
-if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
+# 📥 Verificar y descargar el modelo
+if not os.path.exists(RUTA_MODELO):
     with st.spinner("Descargando modelo... Esto puede tardar un momento ⏳"):
-        # Descargar el modelo desde Google Drive
         gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
 
     # Verificar si el archivo se descargó correctamente
-    if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
+    if not os.path.exists(RUTA_MODELO):
         st.error("⚠️ Error al descargar el modelo. Verifica el enlace de Google Drive.")
         st.stop()
 
