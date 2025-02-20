@@ -5,20 +5,25 @@ from PIL import Image
 import gdown
 import os
 
-# 📌 Reemplaza con el ID de tu modelo en Google Drive
+# 📌 ID del modelo en Google Drive
 ID_MODELO = "1-RA_iyHmMRLvqxcF4OLaim4tyJ0OcIK_"
-URL_MODELO = f"https://drive.google.com/uc?id=1-RA_iyHmMRLvqxcF4OLaim4tyJ0OcIK_={ID_MODELO}"
+URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
 RUTA_MODELO = "modeloCNN3.h5"
 
-# 📥 Descargar el modelo si no existe
-if not os.path.exists(RUTA_MODELO):
+# 📥 Verificar y descargar el modelo
+if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
     with st.spinner("Descargando modelo... Esto puede tardar un momento ⏳"):
         gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
 
-# 🚀 Cargar el modelo solo cuando sea necesario
+    # Verificar si el archivo se descargó correctamente
+    if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
+        st.error("⚠️ Error al descargar el modelo. Verifica el enlace de Google Drive.")
+        st.stop()
+
+# 🚀 Cargar el modelo (con compatibilidad)
 @st.cache_resource
 def cargar_modelo():
-    return tf.keras.models.load_model(RUTA_MODELO)
+    return tf.keras.models.load_model(RUTA_MODELO, compile=False)
 
 modelo = cargar_modelo()
 
@@ -49,8 +54,8 @@ if archivo_subido is not None:
 
     # 📌 Mostrar resultado
     if prediccion > 0.5:
-        st.success("¡Es un 🐶 **PERRO**!")
+        st.success("¡Es un 🐶 **PERRO**! 🐾")
     else:
-        st.success("¡Es un 🐱 **GATO**!")
+        st.success("¡Es un 🐱 **GATO**! 🐾")
 
-st.write("📌 Modelo basado en una red neuronal convolucional (CNN) entrenada con TensorFlow/Keras.")
+st.write("📌 Modelo basado en una CNN entrenada con TensorFlow/Keras.")
