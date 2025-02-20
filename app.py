@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import gdown
 import os
-https://drive.google.com/file/d/1SHZZrb2CbSPRB_bdul8GY5myCZUqC330/view?usp=drive_link
+
 # 📌 ID del modelo en Google Drive
 ID_MODELO = "1SHZZrb2CbSPRB_bdul8GY5myCZUqC330"
 URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
