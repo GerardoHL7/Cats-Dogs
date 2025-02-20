@@ -2,6 +2,7 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import keras
 
 # Cargar el modelo entrenado
 @st.cache_resource
