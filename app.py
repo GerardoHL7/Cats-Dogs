@@ -2,60 +2,43 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import gdown
-import os
 
-# 📌 ID del modelo en Google Drive
-ID_MODELO = "1SHZZrb2CbSPRB_bdul8GY5myCZUqC330"
-URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
-RUTA_MODELO = "modeloCNN3.h5"
-
-# 📥 Verificar y descargar el modelo
-if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
-    with st.spinner("Descargando modelo... Esto puede tardar un momento ⏳"):
-        gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
-
-    # Verificar si el archivo se descargó correctamente
-    if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
-        st.error("⚠️ Error al descargar el modelo. Verifica el enlace de Google Drive.")
-        st.stop()
-
-# 🚀 Cargar el modelo (con compatibilidad)
+# Cargar el modelo entrenado
 @st.cache_resource
-def cargar_modelo():
-    return tf.keras.models.load_model(RUTA_MODELO, compile=False)
+def load_model():
+    return tf.keras.models.load_model("modelCNN3.h5")
 
-modelo = cargar_modelo()
+model = load_model()
 
-# 📌 Función para preprocesar la imagen
-def preprocesar_imagen(imagen):
-    imagen = imagen.convert("L")  # Convertir a escala de grises
-    imagen = imagen.resize((100, 100))  # Redimensionar
-    imagen = np.array(imagen) / 255.0  # Normalización
-    imagen = np.expand_dims(imagen, axis=-1)  # Añadir canal de profundidad
-    imagen = np.expand_dims(imagen, axis=0)  # Añadir dimensión batch
-    return imagen
+# Preprocesamiento de imagen
+def preprocess_image(image):
+    image = image.convert("L")  # Convertir a escala de grises si el modelo lo requiere
+    image = image.resize((100, 100))  # Redimensionar a 100x100 píxeles
+    image = np.array(image) / 255.0  # Normalización
+    image = np.expand_dims(image, axis=-1)  # Añadir canal de profundidad si es necesario
+    image = np.expand_dims(image, axis=0)  # Añadir dimensión batch
+    return image
 
-# 🎨 Interfaz Streamlit
+# Interfaz en Streamlit
 st.title("Clasificador de Perros y Gatos 🐶🐱")
 st.write("Sube una imagen y el modelo te dirá si es un perro o un gato.")
 
-archivo_subido = st.file_uploader("Sube una imagen...", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Sube una imagen...", type=["jpg", "png", "jpeg"])
 
-if archivo_subido is not None:
-    imagen = Image.open(archivo_subido)
-    st.image(imagen, caption="Imagen subida", use_column_width=True)
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Imagen subida", use_column_width=True)
 
-    # 🔄 Preprocesar la imagen
-    imagen_procesada = preprocesar_imagen(imagen)
+    # Preprocesar la imagen
+    processed_image = preprocess_image(image)
 
-    # 🧠 Hacer predicción
-    prediccion = modelo.predict(imagen_procesada)[0][0]
+    # Realizar predicción
+    prediction = model.predict(processed_image)[0][0]
 
-    # 📌 Mostrar resultado
-    if prediccion > 0.5:
-        st.success("¡Es un 🐶 **PERRO**! 🐾")
+    # Mostrar resultado
+    if prediction > 0.5:
+        st.success("¡Es un 🐶 **PERRO**!")
     else:
-        st.success("¡Es un 🐱 **GATO**! 🐾")
+        st.success("¡Es un 🐱 **GATO**!")
 
-st.write("📌 Modelo basado en una CNN entrenada con TensorFlow/Keras.")
+st.write("📌 Modelo basado en una red neuronal convolucional (CNN) entrenada con TensorFlow/Keras.")
