@@ -7,7 +7,7 @@ import os
 
 # 📌 Reemplaza con el ID de tu modelo en Google Drive
 ID_MODELO = "1-3xbX688NVdwm1g50x3f9IlOVCTe-2gh"
-URL_MODELO = f"https://drive.google.com/file/d/1-3xbX688NVdwm1g50x3f9IlOVCTe-2gh/view?usp=drive_link={ID_MODELO}"
+URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
 RUTA_MODELO = "modeloCNN3.h5"
 
 # 📥 Descargar el modelo si no existe
