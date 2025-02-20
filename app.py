@@ -6,7 +6,7 @@ from PIL import Image
 # Cargar el modelo entrenado
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("modelCCN3.h5")
+    return tf.keras.models.load_model("modeloCCN3.h5")
 
 model = load_model()
 
