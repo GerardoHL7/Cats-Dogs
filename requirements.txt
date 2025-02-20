@@ -4,3 +4,4 @@ gdown==4.6.0
 numpy==1.23.5
 Pillow==9.3.0
 h5py==3.7.0
+os
