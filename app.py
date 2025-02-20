@@ -36,7 +36,7 @@ if uploaded_file is not None:
     prediction = model.predict(processed_image)[0][0]
 
     # Mostrar resultado
-    if prediction > 0.5:
+    if prediction < 0.5:
         st.success("¡Es un 🐶 **PERRO**!")
     else:
         st.success("¡Es un 🐱 **GATO**!")
