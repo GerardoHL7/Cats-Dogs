@@ -10,7 +10,7 @@ st.title("Clasificación de Imágenes: Perro 🐶 o Gato 🐱")
 st.write("Sube una imagen y el modelo la clasificará.")
 
 # URL del modelo en Google Drive (reemplázala con tu ID correcto)
-url = ""1Epg3b63zLXUXbUmZcCpQucJVBziJW9GR"
+url = "1Epg3b63zLXUXbUmZcCpQucJVBziJW9GR"
 modelo_path = "modeloCNN3.h5"
 
 # Descargar el modelo si no existe
