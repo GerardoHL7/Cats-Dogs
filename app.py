@@ -4,6 +4,7 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import gdown
 import os
+import streamlit as st  # Asegúrate de importar streamlit
 
 # Enlace de Google Drive con el modelo (reemplaza con tu ID de archivo)
 ID_MODELO = "1-TdpYJNCcDv8nqHuUmAfMUdjp_psJgPD"
@@ -16,7 +17,6 @@ if not os.path.exists(RUTA_MODELO):
         gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
 
 # Cargar el modelo solo cuando sea necesario
-@st.cache_resource
 def cargar_modelo():
     modelo = load_model(RUTA_MODELO)
     return modelo
