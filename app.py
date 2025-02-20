@@ -6,18 +6,17 @@ from PIL import Image
 import gdown
 import os
 
-# 📌 ID del modelo en Google Drive (REEMPLÁZALO CON TU ID CORRECTO)
+# 📌 Enlace de Google Drive con el modelo (cambia esto con el ID real de tu modelo)
 ID_MODELO = "1Epg3b63zLXUXbUmZcCpQucJVBziJW9GR"
 URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
-RUTA_MODELO = "modeloCNN3.h5"
+RUTA_MODELO = "modelo_gatos_perros.h5"
 
-# 🔄 Descargar el modelo si no existe
+# 📌 Descargar el modelo si no existe
 if not os.path.exists(RUTA_MODELO):
-    with st.spinner("📥 Descargando modelo... Esto puede tardar un momento ⏳"):
+    with st.spinner("Descargando modelo... Esto puede tardar un momento ⏳"):
         gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
-    st.success("✅ Modelo descargado exitosamente.")
 
-# 🧠 Cargar el modelo con caché para mejorar rendimiento
+# 📌 Cargar el modelo solo cuando sea necesario
 @st.cache_resource
 def cargar_modelo():
     modelo = load_model(RUTA_MODELO)
@@ -26,38 +25,40 @@ def cargar_modelo():
 # 📌 Diccionario de clases
 clases = {0: "🐱 Gato", 1: "🐶 Perro"}
 
-# 🎨 Interfaz de Streamlit
-st.title("Clasificación de Imágenes: ¿Perro o Gato? 🐾")
-st.write("Sube una imagen y el modelo te dirá si es un **gato** o un **perro**.")
+# 📌 Interfaz de Streamlit
+st.title("Clasificador de Gatos y Perros 🐱🐶")
+st.write("Sube una imagen y el modelo la clasificará como gato o perro.")
 
-# 📤 Cargar imagen
-imagen_subida = st.file_uploader("📤 Sube una imagen...", type=["jpg", "png", "jpeg"])
+imagen_subida = st.file_uploader("Sube una imagen...", type=["jpg", "png", "jpeg"])
 
 if imagen_subida is not None:
-    # Mostrar la imagen subida
+    # Cargar y mostrar la imagen
     imagen = Image.open(imagen_subida)
-    st.image(imagen, caption="📷 Imagen cargada", use_column_width=True)
+    imagen = imagen.convert("RGB")  # Asegurarse de que sea RGB
+    st.image(imagen, caption="Imagen cargada", use_column_width=True)
 
-    # 🔄 Cargar el modelo
+    # Redimensionar la imagen según el modelo
     modelo = cargar_modelo()
-    input_shape = modelo.input_shape  # Obtener la forma de entrada esperada por el modelo
+    input_shape = modelo.input_shape  # (None, 100, 100, 1)
+    img_size = (input_shape[1], input_shape[2])
+    
+    imagen = imagen.resize(img_size)  # Ajustar tamaño
+    imagen = np.array(imagen, dtype=np.float32) / 255.0  # Normalizar
 
-    # 🔄 Redimensionar la imagen al tamaño esperado por el modelo
-    imagen = imagen.convert("L")  # Convertir a escala de grises si es necesario
-    imagen = imagen.resize((input_shape[1], input_shape[2]))  # Redimensionar la imagen
+    # Si el modelo espera escala de grises, convertir la imagen
+    if input_shape[3] == 1:
+        imagen = np.mean(imagen, axis=-1, keepdims=True)  # Convertir a escala de grises
 
-    # 🔄 Convertir a array numpy y normalizar (valores entre 0 y 1)
-    imagen_array = np.array(imagen, dtype=np.float32) / 255.0
-    imagen_array = np.expand_dims(imagen_array, axis=0)  # Añadir la dimensión batch
-    imagen_array = np.expand_dims(imagen_array, axis=-1)  # Añadir la dimensión de canal si es necesario
+    # Expandir dimensiones para que tenga la forma correcta (1, height, width, channels)
+    imagen = np.expand_dims(imagen, axis=0)
 
-    # 🔍 Hacer la predicción
+    # Hacer la predicción
     try:
-        prediccion = modelo.predict(imagen_array)[0][0]
-        clase_predicha = 1 if prediccion > 0.5 else 0  # Si >0.5 es perro, si <0.5 es gato
+        prediccion = modelo.predict(imagen)
+        clase_predicha = int(prediccion[0][0] > 0.5)  # 0 = Gato, 1 = Perro
 
-        # 🎯 Mostrar el resultado
-        st.markdown(f"## **Predicción: {clases[clase_predicha]}**")
-
+        # Mostrar resultado
+        st.write(f"El modelo predice: **{clases[clase_predicha]}**")
     except Exception as e:
-        st.error(f"❌ Error al hacer la predicción: {e}")
+        st.error(f"Ha ocurrido un error durante la predicción: {e}")
+
