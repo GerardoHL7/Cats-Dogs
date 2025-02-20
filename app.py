@@ -6,9 +6,9 @@ import gdown
 import os
 
 # Enlace de Google Drive con el modelo (reemplaza con tu ID de archivo)
-ID_MODELO = "1121-HYnvXZQFycx9rYGogBN1CMffHHoXmuX"
+ID_MODELO = "1-TdpYJNCcDv8nqHuUmAfMUdjp_psJgPD"
 URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
-RUTA_MODELO = "mimodelo.h5"
+RUTA_MODELO = "modeloCNN3.h5"
 
 # Descargar el modelo si no existe
 if not os.path.exists(RUTA_MODELO):
