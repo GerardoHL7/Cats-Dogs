@@ -21,6 +21,9 @@ def cargar_modelo():
     modelo = load_model(RUTA_MODELO)
     return modelo
 
+# Cargar el modelo
+modelo = cargar_modelo()
+
 # Función para preprocesar la imagen
 def preprocesar_imagen(imagen):
     imagen = imagen.convert("L")  # Convertir a escala de grises
