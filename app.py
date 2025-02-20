@@ -1,57 +1,44 @@
 import streamlit as st
-import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+import numpy as np
 from PIL import Image
-import os
 
-# 📌 Ruta del modelo guardado (debe estar en la misma carpeta que este script)
-RUTA_MODELO = "modeloCNN3.h5"
-
-# 📌 Cargar el modelo
+# Cargar el modelo entrenado
 @st.cache_resource
-def cargar_modelo():
-    if not os.path.exists(RUTA_MODELO):
-        st.error("El modelo no se encuentra en la ruta especificada.")
-        return None
-    return load_model(RUTA_MODELO)
+def load_model():
+    return tf.keras.models.load_model("modelCCN3.h5")
 
-modelo = cargar_modelo()
+model = load_model()
 
-# 📌 Diccionario de clases
-clases = {0: "🐱 Gato", 1: "🐶 Perro"}
+# Preprocesamiento de imagen
+def preprocess_image(image):
+    image = image.convert("L")  # Convertir a escala de grises si el modelo lo requiere
+    image = image.resize((100, 100))  # Redimensionar a 100x100 píxeles
+    image = np.array(image) / 255.0  # Normalización
+    image = np.expand_dims(image, axis=-1)  # Añadir canal de profundidad si es necesario
+    image = np.expand_dims(image, axis=0)  # Añadir dimensión batch
+    return image
 
-# 📌 Interfaz de Streamlit
-st.title("Clasificador de Gatos y Perros 🐱🐶")
-st.write("Sube una imagen y el modelo intentará clasificarla.")
+# Interfaz en Streamlit
+st.title("Clasificador de Perros y Gatos 🐶🐱")
+st.write("Sube una imagen y el modelo te dirá si es un perro o un gato.")
 
-imagen_subida = st.file_uploader("Sube una imagen...", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Sube una imagen...", type=["jpg", "png", "jpeg"])
 
-if imagen_subida is not None:
-    # 📌 Cargar y mostrar la imagen
-    imagen = Image.open(imagen_subida)
-    imagen = imagen.convert("RGB")  # Convertir a RGB
-    st.image(imagen, caption="Imagen cargada", use_column_width=True)
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Imagen subida", use_column_width=True)
 
-    # 📌 Procesar la imagen
-    if modelo:
-        input_shape = modelo.input_shape  # (None, 100, 100, 1) por ejemplo
-        img_size = (input_shape[1], input_shape[2])  # Extraer tamaño esperado
+    # Preprocesar la imagen
+    processed_image = preprocess_image(image)
 
-        imagen = imagen.resize(img_size)  # Redimensionar
-        imagen = np.array(imagen, dtype=np.float32) / 255.0  # Normalizar
+    # Realizar predicción
+    prediction = model.predict(processed_image)[0][0]
 
-        # 📌 Convertir a escala de grises si el modelo espera solo 1 canal
-        if input_shape[3] == 1:
-            imagen = np.mean(imagen, axis=-1, keepdims=True)
+    # Mostrar resultado
+    if prediction > 0.5:
+        st.success("¡Es un 🐶 **PERRO**!")
+    else:
+        st.success("¡Es un 🐱 **GATO**!")
 
-        # 📌 Expandir dimensiones para que tenga forma (1, altura, ancho, canales)
-        imagen = np.expand_dims(imagen, axis=0)
-
-        # 📌 Hacer la predicción
-        try:
-            prediccion = modelo.predict(imagen)
-            clase_predicha = int(prediccion[0][0] > 0.5)  # 0 = Gato, 1 = Perro
-            st.write(f"El modelo predice: **{clases[clase_predicha]}**")
-        except Exception as e:
-            st.error(f"Error en la predicción: {e}")
+st.write("📌 Modelo basado en una red neuronal convolucional (CNN) entrenada con TensorFlow/Keras.")
