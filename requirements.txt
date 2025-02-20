@@ -3,4 +3,3 @@ tensorflow
 numpy
 pillow
 keras
-gdown
