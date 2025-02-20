@@ -1,31 +1,25 @@
-import streamlit as st
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 from PIL import Image
 import gdown
 import os
 
-# ID y URL del archivo de Google Drive
-ID_MODELO = "1-TdpYJNCcDv8nqHuUmAfMUdjp_psJgPD"
+# Enlace de Google Drive con el modelo (reemplaza con tu ID de archivo)
+ID_MODELO = "1121-HYnvXZQFycx9rYGogBN1CMffHHoXmuX"
 URL_MODELO = f"https://drive.google.com/uc?id={ID_MODELO}"
-RUTA_MODELO = "modeloCNN3.h5"
+RUTA_MODELO = "mimodelo.h5"
 
-# Verificar si el modelo ya existe, si no, descargarlo
-if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
-    with st.spinner("Descargando el modelo... Esto puede tardar un momento ⏳"):
+# Descargar el modelo si no existe
+if not os.path.exists(RUTA_MODELO):
+    with st.spinner("Descargando modelo... Esto puede tardar un momento ⏳"):
         gdown.download(URL_MODELO, RUTA_MODELO, quiet=False)
 
-    # Verificar si el archivo se descargó correctamente
-    if not os.path.exists(RUTA_MODELO) or os.path.getsize(RUTA_MODELO) < 1024:
-        st.error("⚠️ Error al descargar el modelo. Verifica el enlace de Google Drive.")
-        st.stop()
-
-# Cargar el modelo
+# Cargar el modelo solo cuando sea necesario
 @st.cache_resource
 def cargar_modelo():
-    return tf.keras.models.load_model(RUTA_MODELO, compile=False)
-
-modelo = cargar_modelo()
+    modelo = load_model(RUTA_MODELO)
+    return modelo
 
 # Función para preprocesar la imagen
 def preprocesar_imagen(imagen):
